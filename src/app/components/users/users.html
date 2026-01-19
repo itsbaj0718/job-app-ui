@@ -1,0 +1,37 @@
+<div class="users-container">
+  <h2>Job Postings</h2>
+  
+  <button class="load-btn" (click)="loadData()">Load Data</button>
+  
+  <div *ngIf="loading" class="loading">Loading job posts...</div>
+  
+  <div *ngIf="error" class="error">{{ error }}</div>
+  
+  <div *ngIf="!loading && jobPosts.length === 0" class="no-data">
+    No job posts found
+  </div>
+  
+  <div *ngIf="!loading && jobPosts.length > 0" class="jobs-grid">
+    <div *ngFor="let job of jobPosts" class="job-card">
+      <div class="job-header">
+        <h3>{{ job.postProfile }}</h3>
+        <span class="job-id">#{{ job.postId }}</span>
+      </div>
+      <div class="job-body">
+        <p class="description">{{ job.postDesc }}</p>
+        <div class="experience">
+          <strong>Experience Required:</strong> {{ job.reqExperience }} years
+        </div>
+        <div class="tech-stack">
+          <strong>Tech Stack:</strong>
+          <div class="tags">
+            <span *ngFor="let tech of job.postTechStack" class="tag">{{ tech }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="job-actions">
+        <button class="delete-btn" (click)="deleteJob(job.postId)">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

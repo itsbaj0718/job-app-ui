@@ -1,0 +1,191 @@
+<div class="body-container" style="background: white; padding: 2rem; margin: 2rem; border: 2px solid red; min-height: 200px;">
+  <h2 style="color: red;">BODY COMPONENT IS RENDERING!</h2>
+  
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <button class="btn btn-primary" (click)="openAddForm()">+ Add Job Post</button>
+    <button class="btn btn-secondary" (click)="loadInitialData()">Load Initial Data</button>
+    <button class="btn btn-secondary" (click)="loadAllJobs()">Refresh Jobs</button>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="message success">
+    {{ success }}
+    <button class="close-btn" (click)="clearMessages()">×</button>
+  </div>
+  <div *ngIf="error" class="message error">
+    {{ error }}
+    <button class="close-btn" (click)="clearMessages()">×</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">Loading job posts...</div>
+
+  <!-- Add Job Post Form -->
+  <div *ngIf="showAddForm" class="modal-overlay" (click)="closeAddForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Add New Job Post</h2>
+        <button class="close-btn" (click)="closeAddForm()">×</button>
+      </div>
+      <form class="modal-body" (ngSubmit)="addJobPost()">
+        <div class="form-group">
+          <label for="postProfile">Job Profile Name *</label>
+          <input 
+            type="text" 
+            id="postProfile" 
+            class="form-control"
+            [(ngModel)]="newJobPost.postProfile"
+            name="postProfile"
+            placeholder="e.g., Senior Angular Developer"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="postDesc">Job Description *</label>
+          <textarea 
+            id="postDesc" 
+            class="form-control"
+            [(ngModel)]="newJobPost.postDesc"
+            name="postDesc"
+            placeholder="Enter job description"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="reqExperience">Required Experience (Years) *</label>
+          <input 
+            type="number" 
+            id="reqExperience" 
+            class="form-control"
+            [(ngModel)]="newJobPost.reqExperience"
+            name="reqExperience"
+            min="0"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="techStack">Tech Stack (comma-separated) *</label>
+          <textarea 
+            id="techStack" 
+            class="form-control"
+            [(ngModel)]="techStackInput"
+            name="techStack"
+            placeholder="e.g., Angular, TypeScript, RxJS, CSS"
+            rows="3"
+            required
+          ></textarea>
+          <small class="help-text">Enter technologies separated by commas</small>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAddForm()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Job Post</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update Job Post Form -->
+  <div *ngIf="showUpdateForm && selectedJobPost" class="modal-overlay" (click)="closeUpdateForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Update Job Post</h2>
+        <button class="close-btn" (click)="closeUpdateForm()">×</button>
+      </div>
+      <form class="modal-body" (ngSubmit)="updateJob()">
+        <div class="form-group">
+          <label for="updatePostProfile">Job Profile Name *</label>
+          <input 
+            type="text" 
+            id="updatePostProfile" 
+            class="form-control"
+            [(ngModel)]="updateJobPost.postProfile"
+            name="postProfile"
+            placeholder="e.g., Senior Angular Developer"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="updatePostDesc">Job Description *</label>
+          <textarea 
+            id="updatePostDesc" 
+            class="form-control"
+            [(ngModel)]="updateJobPost.postDesc"
+            name="postDesc"
+            placeholder="Enter job description"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="updateReqExperience">Required Experience (Years) *</label>
+          <input 
+            type="number" 
+            id="updateReqExperience" 
+            class="form-control"
+            [(ngModel)]="updateJobPost.reqExperience"
+            name="reqExperience"
+            min="0"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="updateTechStack">Tech Stack (comma-separated) *</label>
+          <textarea 
+            id="updateTechStack" 
+            class="form-control"
+            [(ngModel)]="techStackInput"
+            name="techStack"
+            placeholder="e.g., Angular, TypeScript, RxJS, CSS"
+            rows="3"
+            required
+          ></textarea>
+          <small class="help-text">Enter technologies separated by commas</small>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeUpdateForm()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Job Post</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Job Posts List -->
+  <div *ngIf="!loading && jobPosts.length === 0" class="no-data">
+    No job posts found. Click "Add Job Post" to create one.
+  </div>
+
+  <div *ngIf="!loading && jobPosts.length > 0" class="jobs-grid">
+    <div *ngFor="let job of jobPosts" class="job-card">
+      <div class="job-header">
+        <h3>{{ job.postProfile }}</h3>
+        <span class="job-id">#{{ job.postId }}</span>
+      </div>
+      <div class="job-body">
+        <p class="description">{{ job.postDesc }}</p>
+        <div class="experience">
+          <strong>Experience Required:</strong> {{ job.reqExperience }} years
+        </div>
+        <div class="tech-stack">
+          <strong>Tech Stack:</strong>
+          <div class="tags">
+            <span *ngFor="let tech of job.postTechStack" class="tag">{{ tech }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="job-actions">
+        <button class="btn btn-edit" (click)="getJobPost(job.postId)">Edit</button>
+        <button class="btn btn-delete" (click)="deleteJob(job.postId)">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "dummy-angular-app": {
+    "job-app-ui": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -16,6 +16,8 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "outputPath": "dist/job-app-ui",
+            "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -56,10 +58,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "dummy-angular-app:build:production"
+              "buildTarget": "job-app-ui:build:production"
             },
             "development": {
-              "buildTarget": "dummy-angular-app:build:development"
+              "buildTarget": "job-app-ui:build:development"
             }
           },
           "defaultConfiguration": "development"
